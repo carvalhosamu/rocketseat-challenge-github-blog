@@ -3,6 +3,14 @@ import styled from 'styled-components'
 export const FormContainer = styled.div`
   div {
     margin-bottom: 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    span {
+      color: ${(props) => props.theme['dark-blue-400']};
+      font-size: 0.875rem;
+    }
   }
 
   label {

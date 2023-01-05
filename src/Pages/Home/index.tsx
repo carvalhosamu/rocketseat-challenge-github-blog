@@ -1,43 +1,34 @@
-import { useEffect } from 'react'
-import { useContextSelector } from 'use-context-selector'
-import { GithubContext } from '../../contexts/GithubContext'
+import { useMemo, useState } from 'react'
+import { useFindIssues } from '../../services/GithubRequests'
+import { Issue } from './components/Issue'
 import { Profile } from './components/Profile'
 import { SearchForm } from './components/SearchForm'
-import { IssueList, Issue } from './styles'
+import { IssueList } from './styles'
 
 export function Home() {
-  const [issue, onSearchIssue] = useContextSelector(
-    GithubContext,
-    (context) => {
-      return [context.issue, context.onSearchIssues]
-    },
-  )
+  const [searchText, setSearchText] = useState('')
+  const issueResponse = useFindIssues(searchText)
+
+  const issuesCount = issueResponse.data?.total_count
+    ? issueResponse.data?.total_count
+    : 0
 
   function handleSearch(filterText: string) {
-    onSearchIssue(filterText)
+    setSearchText(filterText)
   }
 
-  useEffect(() => {
-    if (issue) {
-      console.log(issue)
-    }
-  }, [issue])
+  // add useMemo to render only in first rendering
+  const userProfile = useMemo(() => {
+    return <Profile />
+  }, [])
 
   return (
     <>
-      <Profile />
-      <SearchForm onSearch={handleSearch} />
+      {userProfile}
+      <SearchForm issuesCount={issuesCount} onSearch={handleSearch} />
       <IssueList>
-        {issue?.items.map((c) => {
-          return (
-            <Issue key={c.id}>
-              <header>
-                <strong>{c.title}</strong>
-                <span>Há 1 dia</span>
-              </header>
-              <p>{c.body}</p>
-            </Issue>
-          )
+        {issueResponse.data?.items.map((c) => {
+          return <Issue item={c} key={c.id} />
         })}
       </IssueList>
     </>

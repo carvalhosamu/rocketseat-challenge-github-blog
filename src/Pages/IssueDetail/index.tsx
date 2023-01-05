@@ -1,60 +1,75 @@
-/* eslint-disable prettier/prettier */
-import { TitleBox, FooterItem, Markdown } from "./styles";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { dracula as theme } from "react-syntax-highlighter/dist/esm/styles/prism"; // atomDark  nord
+import { Markdown, FooterItem, TitleBox } from './styles'
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
+import { dracula as theme } from 'react-syntax-highlighter/dist/esm/styles/prism'
+
+import { NavLink, useParams } from 'react-router-dom'
+
+import pluralize from 'pluralize'
+
+import { useFindIssueDetail } from '../../services/GithubRequests'
 import {
   faChevronLeft,
   faArrowUpRightFromSquare,
   faCalendarDay,
   faComment,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGithub } from "@fortawesome/free-brands-svg-icons";
+} from '@fortawesome/free-solid-svg-icons'
+import { faGithub } from '@fortawesome/free-brands-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-const markdown = `**Programming languages all have built-in data structures, but these often differ from one language to another**. This article attempts to list the built-in data structures available in JavaScript and what properties they have. These can be used to build other data structures. Wherever possible, comparisons with other languages are drawn.
-
-[Dynamic typing](https://github.com/carvalhosamu/rocketseat-challenge-github-blog/issues/new)
-JavaScript is a loosely typed and dynamic language. Variables in JavaScript are not directly associated with any particular value type, and any variable can be assigned (and re-assigned) values of all types:
-
-~~~js
-let foo = 42; // foo is now a number 
-foo = ‘bar’; // foo is now a string 
-foo = true; // foo is now a boolean
-~~~
-`;
+import { format, formatDistanceToNowStrict } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
 
 export function IssueDetail() {
+  const params = useParams()
+  const issueNumber = parseInt(params.issueNumber as string)
+  const { data } = useFindIssueDetail(issueNumber)
+  const createdAt = data?.created_at ? new Date(data?.created_at) : undefined
+
   return (
     <>
       <TitleBox>
         <header>
-          <a href="#">
+          <NavLink to="/">
             <FontAwesomeIcon icon={faChevronLeft} /> voltar
-          </a>
-          <a href="#teste">
-            ver no github <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
-          </a>
+          </NavLink>
+          <div>
+            <a href={data?.html_url}>
+              ver no github <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
+            </a>
+          </div>
         </header>
-        <h2>JavaScript data types and data structures</h2>
+        <h2>{data?.title}</h2>
         <footer>
           <FooterItem>
             <FontAwesomeIcon icon={faGithub} />
-            <span>samuel96carvalho</span>
+            <span>{data?.user.login}</span>
           </FooterItem>
           <FooterItem>
             <FontAwesomeIcon icon={faCalendarDay} />
-            <span>Há 1 dia</span>
+            {createdAt && (
+              <time
+                title={format(createdAt, 'dd/MM/yyyy HH:mm:ss')}
+                dateTime={createdAt.toISOString()}
+              >
+                {formatDistanceToNowStrict(createdAt, {
+                  locale: ptBR,
+                  addSuffix: true,
+                })}
+              </time>
+            )}
           </FooterItem>
           <FooterItem>
             <FontAwesomeIcon icon={faComment} />
-            <span>5 Comentários</span>
+            <span>
+              {data?.comments} {pluralize('Comentário', data?.comments)}
+            </span>
           </FooterItem>
         </footer>
       </TitleBox>
       <Markdown
         components={{
           code({ node, inline, className, children, style, ...props }) {
-            const match = /language-(\w+)/.exec(className || "");
+            const match = /language-(\w+)/.exec(className || '')
             return !inline && match ? (
               <SyntaxHighlighter
                 style={theme}
@@ -62,18 +77,18 @@ export function IssueDetail() {
                 PreTag="div"
                 {...props}
               >
-                {String(children).replace(/\n$/, "")}
+                {String(children).replace(/\n$/, '')}
               </SyntaxHighlighter>
             ) : (
               <code className={className} {...props}>
                 {children}
               </code>
-            );
+            )
           },
         }}
       >
-      {markdown}
+        {data?.body!}
       </Markdown>
     </>
-  );
+  )
 }

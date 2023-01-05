@@ -20,7 +20,6 @@ export const TitleBox = styled.div`
   a {
     display: flex;
     align-items: center;
-    line-height: 1;
     gap: 0.5rem;
     color: ${(props) => props.theme['blue-500']};
     text-transform: uppercase;
@@ -56,7 +55,8 @@ export const FooterItem = styled.div`
     color: ${(props) => props.theme['dark-blue-500']};
     font-size: 18px;
   }
-  span {
+  span,
+  time {
     line-height: 1;
     color: ${(props) => props.theme['dark-blue-500']};
   }
@@ -72,9 +72,16 @@ export const Markdown = styled(ReactMarkdown)`
   }
 
   a {
-    display: block;
     color: ${(props) => props.theme['blue-500']};
     text-decoration: underline;
+  }
+
+  ul {
+    // list-style-position: inside;
+    margin-bottom: 1rem;
+    li {
+      margin-left: 1rem;
+    }
   }
 
   pre > div {
@@ -85,5 +92,9 @@ export const Markdown = styled(ReactMarkdown)`
       font-family: 'Fira Code', monospace !important;
       line-height: 1.6 !important;
     }
+  }
+
+  img {
+    width: 100%;
   }
 `

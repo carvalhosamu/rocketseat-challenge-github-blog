@@ -4,6 +4,7 @@ import { FormContainer } from './styles'
 
 interface SearchFormProps {
   onSearch: (value: string) => void
+  issuesCount: number
 }
 
 export function SearchForm(props: SearchFormProps) {
@@ -27,10 +28,13 @@ export function SearchForm(props: SearchFormProps) {
   return (
     <FormContainer>
       <div>
-        <label htmlFor="">Publicações</label>
+        <label htmlFor="search-text">Publicações</label>
+        <span>{props.issuesCount} publicações</span>
       </div>
       <input
         type="text"
+        id="search-text"
+        name="search-text"
         value={searchValue}
         onChange={handleChange}
         placeholder="Buscar conteúdo"

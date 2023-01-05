@@ -32,7 +32,7 @@ export interface Reactions {
   eyes: number
 }
 
-export interface Item {
+export interface IssueDetail {
   url: string
   repository_url: string
   labels_url: string
@@ -57,15 +57,9 @@ export interface Item {
   author_association: string
   active_lock_reason?: any
   body: string
+  closed_by?: any
   reactions: Reactions
   timeline_url: string
   performed_via_github_app?: any
   state_reason?: any
-  score: number
-}
-
-export interface Issue {
-  total_count: number
-  incomplete_results: boolean
-  items: Item[]
 }
